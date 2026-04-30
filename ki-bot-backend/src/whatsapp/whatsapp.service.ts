@@ -14,12 +14,10 @@ export class WhatsAppService {
         private readonly httpService: HttpService,
         private readonly configService: ConfigService,
     ) {
-        const phoneNumberId = this.configService.get<string>('WHATSAPP_PHONE_NUMBER_ID') || '';
-        this.token = this.configService.get<string>('WHATSAPP_TOKEN') || '';
-        
-        if (!phoneNumberId || !this.token) {
-            this.logger.warn('WHATSAPP_PHONE_NUMBER_ID or WHATSAPP_TOKEN is not set in environment variables');
-        }
+        // El operador ! le dice a TypeScript que estamos seguros de que existe
+        // porque Joi lo valida estrictamente al iniciar la app.
+        const phoneNumberId = this.configService.get<string>('WHATSAPP_PHONE_NUMBER_ID')!;
+        this.token = this.configService.get<string>('WHATSAPP_TOKEN')!;
 
         // Using API v18.0 as a standard recent version, can be made dynamic if needed
         this.apiUrl = `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`;
