@@ -29,7 +29,7 @@ export class WhatsAppService {
      * @param message The text content to send
      */
     async sendTextMessage(to: string, message: string): Promise<any> {
-        this.logger.log(`Sending message to ${to}...`);
+        this.logger.debug(`[OUTGOING_PREP] Preparando mensaje de texto para ${to}`);
 
         const payload = {
             messaging_product: 'whatsapp',
@@ -52,8 +52,8 @@ export class WhatsAppService {
                 this.httpService.post(this.apiUrl, payload, { headers }).pipe(
                     catchError((error: AxiosError) => {
                         this.logger.error(
-                            `Failed to send message to ${to}: ${error.message}`,
-                            error.response?.data ? JSON.stringify(error.response.data) : '',
+                            `[WHATSAPP_API_ERROR] Fallo al enviar mensaje a ${to}. Motivo: ${error.message}`,
+                            error.response?.data ? JSON.stringify(error.response.data) : error.stack,
                         );
                         throw error;
                     }),
@@ -61,7 +61,7 @@ export class WhatsAppService {
             );
 
             const messageId = response.data?.messages?.[0]?.id;
-            this.logger.log(`Message successfully sent to ${to}. Message ID: ${messageId}`);
+            this.logger.log(`[OUTGOING_SUCCESS] Mensaje enviado a ${to} | MessageID: ${messageId}`);
             
             return response.data;
         } catch (error) {

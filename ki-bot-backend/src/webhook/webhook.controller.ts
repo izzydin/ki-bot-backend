@@ -38,16 +38,19 @@ export class WebhookController {
 
             const { phone, text } = extractedData;
 
-            // 3. Imprimimos el mensaje entrante
-            this.logger.log(`Mensaje recibido de ${phone}: "${text}"`);
+            // 3. Log estructurado del mensaje entrante
+            this.logger.log(`[INCOMING_MSG] Phone: ${phone} | Text: "${text}"`);
 
             // 4. Enviamos una respuesta usando el servicio inyectado
             await this.whatsappService.sendTextMessage(phone, 'Hola 👋 soy Ki Bot');
 
             return 'EVENT_RECEIVED';
         } catch (error) {
-            // 5. Manejo de errores
-            this.logger.error(`Error procesando webhook: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+            // 5. Manejo de errores con contexto estructurado
+            this.logger.error(
+                `[WEBHOOK_ERROR] Fallo al procesar el mensaje entrante`,
+                error instanceof Error ? error.stack : JSON.stringify(error)
+            );
             // Meta espera siempre un status 200, si fallamos debemos evitar que Meta reintente infinitamente
             return 'EVENT_RECEIVED';
         }
